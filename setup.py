@@ -38,7 +38,7 @@ def main():
         questions = [
             inquirer.List('action',
                           message="Escolha uma opção",
-                          choices=['Configurar o ambiente virtual e instalar dependências', 'Apenas instalar dependências', 'Sair'],
+                          choices=['Configurar o ambiente virtual e instalar dependências', 'Apenas instalar dependências', 'Executar o Servidor Flask', 'Sair'],
                           ),
         ]
         
@@ -49,6 +49,8 @@ def main():
             installRequirements()
         elif answers['action'] == 'Apenas instalar dependências':
             installRequirements()
+        elif answers['action'] == 'Executar o Servidor Flask':
+            runServer()
         elif answers['action'] == 'Sair':
             print("Saindo...")
             break
