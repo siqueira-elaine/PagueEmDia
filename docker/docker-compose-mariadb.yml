@@ -1,0 +1,16 @@
+services:
+  mariadb:
+    build:
+      context: ./docker-mariadb
+    container_name: mariadb-pagueemdia-container
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pagueemdia
+    networks:
+      - rede-pagueemdia
+
+networks:
+  rede-destinations:
+    driver: bridge
