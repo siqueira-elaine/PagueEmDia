@@ -25,8 +25,10 @@ def createApp(config_class=None):
     with app.app_context():
         from app.controllers import auth_controller
         from app.controllers import user_controller
+        from app.controllers import slip_controller
         app.register_blueprint(auth_controller.auth_bp)
         app.register_blueprint(user_controller.user_bp)
+        app.register_blueprint(slip_controller.slip_bp)
 
         db.create_all()
 
