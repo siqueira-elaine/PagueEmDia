@@ -3,7 +3,7 @@ version: '3.8'
 services:
   phpmyadmin:
     build:
-      context: ./docker-phpmyadmin
+      context: docker-phpmyadmin
     container_name: phpmyadmin-pagueemdia-container
     ports:
       - "80:80"

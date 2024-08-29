@@ -3,7 +3,7 @@ version: '3.8'
 services:
   mariadb:
     build:
-      context: ./docker-mariadb
+      context: docker-mariadb
     container_name: mariadb-pagueemdia-container
     ports:
       - "3306:3306"
