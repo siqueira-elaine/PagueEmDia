@@ -28,6 +28,6 @@ def login():
     user = getUserByUsername(username)
     if user and verifyPassword(user.password, password):
         accessToken = create_access_token(identity=username)
-        return jsonify({'accessToken': accessToken}), 200
+        return jsonify({'accessToken': accessToken, 'userId': user.id}), 200
 
     return jsonify({'message': 'Invalid credentials'}), 401

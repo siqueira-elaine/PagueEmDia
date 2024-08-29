@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
@@ -12,6 +13,8 @@ jwt = JWTManager()
 
 def createApp(config_class=None):
     app = Flask(__name__)
+    
+    CORS(app)
 
     if config_class is None:
         app.config.from_object('app.config.Config')
