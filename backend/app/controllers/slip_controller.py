@@ -15,17 +15,16 @@ def create_slip_endpoint():
     current_user = get_jwt_identity()
     user = User.query.filter_by(username=current_user).first()
 
-    if not all(key in data for key in ['due_date', 'value']):
+    if not all(key in data for key in ['value']):
         return jsonify({"msg": "Missing data"}), 400
 
-    try:
-        due_date = datetime.fromisoformat(data['due_date'].replace('Z', '+00:00'))
-    except ValueError as e:
-        return jsonify({"msg": f"Invalid date format: {e}"}), 400
+    # try:
+    #     due_date = datetime.fromisoformat(data['due_date'].replace('Z', '+00:00'))
+    # except ValueError as e:
+    #     return jsonify({"msg": f"Invalid date format: {e}"}), 400
 
     new_slip = create_slip(
         user_id=user.id,
-        due_date=due_date,
         value=data['value'],
         description=data.get('description', '')
     )

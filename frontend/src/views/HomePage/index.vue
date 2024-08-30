@@ -1,54 +1,44 @@
 <script>
+import axios from 'axios'
+import { SLIPS } from '@/services/endpoints.js'
+
 import SlipCard from '@/views/HomePage/SlipCard.vue'
 
 export default {
   name: "MainPage",
   components: { SlipCard },
   mounted() {
-
+    axios.get(SLIPS, { 'headers': { 'Authorization': `Bearer ${this.accessToken}` } }).then((response) => {
+      this.slips = response.data;
+    })
   },
   methods: {
     newSplit() {
-      this.slips.push({
+      let slip = {
         description: "",
-        value: 0,
-        appointment_date: "",
-        due_date: "",
-        status: "PENDENTE"
-      });
+        value: 0
+      };
+
+      axios.post(SLIPS, slip ,{ 'headers': { 'Authorization': `Bearer ${this.accessToken}` } }).then((response) => {
+        slip = response.data;
+      })
+      
+      this.slips.push(slip);
+    },
+    deleteSplit(slip) {
+      axios.delete(SLIPS + "/" + slip.id ,{ 'headers': { 'Authorization': `Bearer ${this.accessToken}` } }).then((response) => {
+        slip = response.data;
+      })
+      this.slips.splice(this.slips.indexOf(slip), 1)
     }
   },
   data() {
     return {
+      accessToken: localStorage.getItem("key"),
       user: {
         name: "Elaine"
       },
-      slips: [
-        // {
-        //   id: 1,
-        //   description: "Vivo",
-        //   value: 32.00,
-        //   appointment_date: "2024-06-12",
-        //   due_date: "2024-06-12",
-        //   status: "PENDENTE"
-        // },
-        // {
-        //   id: 2,
-        //   description: "Vivo",
-        //   value: 32.00,
-        //   appointment_date: "2024-06-12",
-        //   due_date: "2024-06-12",
-        //   status: "PENDENTE"
-        // },
-        // {
-        //   id: 3,
-        //   description: "Vivo",
-        //   value: 32.00,
-        //   appointment_date: "2024-06-12",
-        //   due_date: "2024-06-12",
-        //   status: "PENDENTE"
-        // }
-      ]
+      slips: []
     }
   }
 }
@@ -65,7 +55,7 @@ export default {
         <button class="button" @click="newSplit">Novo boleto</button>
       </div>
       <div class="grid grid-cols-4 gap-6" v-if="slips.length > 0">
-        <SlipCard :slip="slip" v-for="(slip, index) in slips" :key="index" @delete="this.slips.splice(this.slips.indexOf(slip), 1)"/>
+        <SlipCard :slip="slip" v-for="(slip, index) in slips" :key="index" @delete="deleteSplit(slip)"/>
       </div>
       <span v-else class="self-center text-lg">Você ainda não tem boletos</span>
     </main>
