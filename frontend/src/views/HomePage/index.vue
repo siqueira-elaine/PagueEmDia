@@ -1,24 +1,35 @@
 <script>
+import axios from 'axios'
+import { SLIPS } from '@/services/endpoints.js'
+
 import SlipCard from '@/views/HomePage/SlipCard.vue'
 
 export default {
   name: "MainPage",
   components: { SlipCard },
   mounted() {
-
+    axios.get(SLIPS, { 'headers': { 'Authorization': `Bearer ${this.accessToken}` } }).then((response) => {
+      this.slips = response.data;
+    })
   },
   methods: {
     newSplit() {
-      this.slips.push({
+      let slip = {
         description: "",
-        value: 0,
-        appointment_date: "",
-        due_date: "",
-        status: "PENDENTE"
-      });
+        value: 0
+      };
+
+      axios.post(SLIPS, slip ,{ 'headers': { 'Authorization': `Bearer ${this.accessToken}` } }).then((response) => {
+        slip = response.data;
+      })
+
+      this.slips.push(slip);
     },
-    deleteSplit(split) {
-      this.slips.splice(this.slips.indexOf(split), 1)
+    deleteSplit(slip) {
+      axios.delete(SLIPS + "/" + slip.id ,{ 'headers': { 'Authorization': `Bearer ${this.accessToken}` } }).then((response) => {
+        slip = response.data;
+      })
+      this.slips.splice(this.slips.indexOf(slip), 1)
     },
     saveSplit(split) {
 
@@ -26,6 +37,7 @@ export default {
   },
   data() {
     return {
+      accessToken: localStorage.getItem("key"),
       user: {
         name: "Elaine"
       },
@@ -46,7 +58,7 @@ export default {
         <button class="button" @click="newSplit">Novo boleto</button>
       </div>
       <div class="grid grid-cols-4 gap-6" v-if="slips.length > 0">
-        <SlipCard
+       <SlipCard
             :slip="slip" v-for="(slip, index) in slips" :key="index"
 
             @save="saveSplit(split)"

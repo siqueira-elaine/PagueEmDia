@@ -15,6 +15,10 @@ export default {
   methods: {
     login() {
       axios.post(LOGIN, this.user).then((response) => {
+        localStorage.setItem("key", response.data.accessToken)
+        localStorage.setItem("userId", response.data.userId)
+
+        this.$router.push("/home")
       })
     }
   }
