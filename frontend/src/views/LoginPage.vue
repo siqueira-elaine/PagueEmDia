@@ -1,6 +1,6 @@
 <script>
 import axios from 'axios'
-import { LOGIN } from '@/services/endpoints.js'
+import { LOGIN } from '@/services/api.js'
 
 export default {
   name: 'LoginPage',
@@ -9,16 +9,29 @@ export default {
       user: {
         username: '',
         password: ''
-      }
+      },
+      response: ""
     }
   },
   methods: {
     login() {
+      if (this.user.username.length === 0) {
+        this.response = "Nome de usuário não pode ser vazio"
+        return;
+      }
+
+      if (this.user.password.length === 0) {
+        this.response = "Senha não pode ser vazia"
+        return;
+      }
+
       axios.post(LOGIN, this.user).then((response) => {
         localStorage.setItem("key", response.data.accessToken)
         localStorage.setItem("userId", response.data.userId)
 
         this.$router.push("/home")
+      }).catch(() => {
+        this.response = "Credenciais inválidas"
       })
     }
   }
@@ -35,6 +48,9 @@ export default {
         <input class="login-container__input" placeholder="Senha" type="password" v-model="user.password" />
       </div>
       <div class="flex flex-col gap-3">
+        <span class="w-full text-center" v-show="response.length !== 0">
+          {{response}}
+        </span>
         <button class="login__button main" @click="login">Entrar</button>
         <RouterLink to="/register" class="login__button aside">
           Registrar

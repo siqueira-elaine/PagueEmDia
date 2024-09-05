@@ -1,45 +1,56 @@
 <script>
 import axios from 'axios'
-import { SLIPS } from '@/services/endpoints.js'
+import {mountTokenHeader, SLIPS, USER} from '@/services/api.js'
 
 import SlipCard from '@/views/HomePage/SlipCard.vue'
 
 export default {
   name: "MainPage",
-  components: { SlipCard },
+  components: {SlipCard},
   mounted() {
-    axios.get(SLIPS, { 'headers': { 'Authorization': `Bearer ${this.accessToken}` } }).then((response) => {
-      this.slips = response.data;
-    })
+    axios.get(USER + "/" + this.userId, mountTokenHeader(this.accessToken)).then((response) => {
+      this.user = response.data;
+    }).then(() => {
+      axios.get(SLIPS, mountTokenHeader(this.accessToken)).then((response) => {
+        this.slips = response.data;
+      })
+    }).catch(() => {
+      this.$router.push("/login");
+    });
   },
   methods: {
-    newSplit() {
-      let slip = {
-        description: "",
+    newSlip() {
+      let slipToCreate = {
+        description: "Novo boleto",
         value: 0
       };
-
-      axios.post(SLIPS, slip ,{ 'headers': { 'Authorization': `Bearer ${this.accessToken}` } }).then((response) => {
-        slip = response.data;
+      axios.post(SLIPS, slipToCreate, mountTokenHeader(this.accessToken)).then((response) => {
+        slipToCreate = response.data;
+        slipToCreate.due_date = null;
+        slipToCreate.payment_date = null;
+        this.slips.push(response.data);
       })
-
-      this.slips.push(slip);
     },
-    deleteSplit(slip) {
-      axios.delete(SLIPS + "/" + slip.id ,{ 'headers': { 'Authorization': `Bearer ${this.accessToken}` } }).then((response) => {
-        slip = response.data;
-      })
-      this.slips.splice(this.slips.indexOf(slip), 1)
+    deleteSlip(slip) {
+      axios.delete(SLIPS + "/" + slip.id, mountTokenHeader(this.accessToken)).then(() => {
+        this.slips.splice(this.slips.indexOf(slip), 1)
+      });
     },
-    saveSplit(split) {
-
+    saveSlip(index, slip) {
+      axios.put(SLIPS + "/" + slip.id, slip, mountTokenHeader(this.accessToken)).then(() => {
+        this.slips[index] = slip;
+      });
+    },
+    exit() {
+      this.$router.push('/login')
     }
   },
   data() {
     return {
       accessToken: localStorage.getItem("key"),
+      userId: localStorage.getItem("userId"),
       user: {
-        name: "Elaine"
+        username: ""
       },
       slips: []
     }
@@ -51,18 +62,21 @@ export default {
   <div class="home">
     <header class="header">
       <h1 class="header__logo">PagueEmDia</h1>
-      <span>{{ user.name }}</span>
+      <div class="flex gap-6 items-center">
+        <span>{{ user.username }}</span>
+        <button class="home__exit-button" @click="exit">Sair</button>
+      </div>
     </header>
     <main class="home__main">
       <div class="flex items-center justify-center">
-        <button class="button" @click="newSplit">Novo boleto</button>
+        <button class="button" @click="newSlip">Novo boleto</button>
       </div>
-      <div class="grid grid-cols-4 gap-6" v-if="slips.length > 0">
-       <SlipCard
+      <div class="grid grid-cols-4 gap-6 h-full" v-if="slips.length > 0">
+        <SlipCard
             :slip="slip" v-for="(slip, index) in slips" :key="index"
 
-            @save="saveSplit(split)"
-            @delete="deleteSplit(slip)"
+            @save="saveSlip(index, $event)"
+            @delete="deleteSlip(slip)"
         />
       </div>
       <span v-else class="self-center text-lg">Você ainda não tem boletos</span>
@@ -73,7 +87,7 @@ export default {
 <style scoped>
 
 .home {
-  @apply flex flex-col gap-6
+  @apply flex flex-col
 }
 
 .header {
@@ -88,13 +102,23 @@ export default {
 }
 
 .home__main {
-  @apply flex flex-col gap-6 px-6
+  @apply flex flex-col gap-6 p-6
 }
 
 .button {
   background-color: var(--pallete-color-main-1);
   color: white;
   @apply px-5 py-2.5 rounded-md border-none cursor-pointer
+}
+
+.home__exit-button {
+  color: var(--pallete-color-red-1);
+  background-color: transparent;
+  @apply px-3 py-1.5 rounded-md border-none cursor-pointer
+}
+
+.home__exit-button:hover {
+  background-color: var(--pallete-color-grey-2);
 }
 
 </style>
