@@ -73,7 +73,7 @@ export default {
       </div>
       <div class="grid grid-cols-4 gap-6 h-full" v-if="slips.length > 0">
         <SlipCard
-            :slip="slip" v-for="(slip, index) in slips" :key="index"
+            :slip="slip" v-for="(slip, index) in slips" :key="slip.id"
 
             @save="saveSlip(index, $event)"
             @delete="deleteSlip(slip)"
