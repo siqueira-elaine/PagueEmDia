@@ -7,6 +7,9 @@ export default {
   methods: {
     deleteSlip() {
       this.$emit("delete");
+    },
+    saveSlip() {
+      this.$emit("save");
     }
   }
 }
@@ -39,7 +42,7 @@ export default {
       </div>
     </div>
     <div class="flex gap-3 items-center justify-end mt-6">
-      <button class="slip__button main">Salvar</button>
+      <button class="slip__button main" @click="saveSlip">Salvar</button>
       <button class="slip__button severe" @click="deleteSlip">Excluir</button>
     </div>
   </div>

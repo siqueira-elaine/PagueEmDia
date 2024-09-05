@@ -15,7 +15,6 @@ export default {
   methods: {
     login() {
       axios.post(LOGIN, this.user).then((response) => {
-        console.log(response)
       })
     }
   }

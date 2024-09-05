@@ -16,6 +16,12 @@ export default {
         due_date: "",
         status: "PENDENTE"
       });
+    },
+    deleteSplit(split) {
+      this.slips.splice(this.slips.indexOf(split), 1)
+    },
+    saveSplit(split) {
+
     }
   },
   data() {
@@ -23,32 +29,7 @@ export default {
       user: {
         name: "Elaine"
       },
-      slips: [
-        // {
-        //   id: 1,
-        //   description: "Vivo",
-        //   value: 32.00,
-        //   appointment_date: "2024-06-12",
-        //   due_date: "2024-06-12",
-        //   status: "PENDENTE"
-        // },
-        // {
-        //   id: 2,
-        //   description: "Vivo",
-        //   value: 32.00,
-        //   appointment_date: "2024-06-12",
-        //   due_date: "2024-06-12",
-        //   status: "PENDENTE"
-        // },
-        // {
-        //   id: 3,
-        //   description: "Vivo",
-        //   value: 32.00,
-        //   appointment_date: "2024-06-12",
-        //   due_date: "2024-06-12",
-        //   status: "PENDENTE"
-        // }
-      ]
+      slips: []
     }
   }
 }
@@ -65,7 +46,12 @@ export default {
         <button class="button" @click="newSplit">Novo boleto</button>
       </div>
       <div class="grid grid-cols-4 gap-6" v-if="slips.length > 0">
-        <SlipCard :slip="slip" v-for="(slip, index) in slips" :key="index" @delete="this.slips.splice(this.slips.indexOf(slip), 1)"/>
+        <SlipCard
+            :slip="slip" v-for="(slip, index) in slips" :key="index"
+
+            @save="saveSplit(split)"
+            @delete="deleteSplit(slip)"
+        />
       </div>
       <span v-else class="self-center text-lg">Você ainda não tem boletos</span>
     </main>
